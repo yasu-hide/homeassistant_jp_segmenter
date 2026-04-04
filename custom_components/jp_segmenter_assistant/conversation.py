@@ -18,6 +18,7 @@ segmenter = TinySegmenter()
 
 _RE_HIRAGANA_ONLY = re.compile(r"^[\u3041-\u309F]+$")
 _RE_KANJI_OR_KATAKANA_TAIL = re.compile(r".*[\u3400-\u9FFF\u30A0-\u30FF]$")
+_JP_PARTICLES = {"の", "を", "に", "で", "が", "は", "へ", "と", "や", "か", "も"}
 
 
 def _tokenize_text(text: str) -> list[str]:
@@ -40,7 +41,13 @@ def _normalize_segmented_text(tokens: list[str]) -> str:
     # Merge contiguous hiragana chunks (e.g. "み", "ゆき" -> "みゆき").
     merged_hiragana: list[str] = []
     for token in normalized_tokens:
-        if merged_hiragana and _RE_HIRAGANA_ONLY.fullmatch(merged_hiragana[-1]) and _RE_HIRAGANA_ONLY.fullmatch(token):
+        if (
+            merged_hiragana
+            and _RE_HIRAGANA_ONLY.fullmatch(merged_hiragana[-1])
+            and _RE_HIRAGANA_ONLY.fullmatch(token)
+            and token not in _JP_PARTICLES
+            and merged_hiragana[-1] not in _JP_PARTICLES
+        ):
             merged_hiragana[-1] += token
             continue
         merged_hiragana.append(token)
@@ -53,6 +60,7 @@ def _normalize_segmented_text(tokens: list[str]) -> str:
             and _RE_KANJI_OR_KATAKANA_TAIL.fullmatch(merged_tokens[-1])
             and _RE_HIRAGANA_ONLY.fullmatch(token)
             and len(token) >= 2
+            and token not in _JP_PARTICLES
         ):
             merged_tokens[-1] += token
             continue
