@@ -80,7 +80,7 @@ async def async_setup_entry(
     async_add_entities,
 ) -> bool:
     """会話エージェントをセットアップ（UI経由で呼ばれる）"""
-    _LOGGER.warning("[%s][setup] Registering conversation entity: %s", DOMAIN, CONVERSATION_ENTITY_ID)
+    _LOGGER.debug("[%s][setup] Registering conversation entity: %s", DOMAIN, CONVERSATION_ENTITY_ID)
     async_add_entities([JpSegmenterAgent(hass, config_entry)])
     return True
 
@@ -108,7 +108,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
     ) -> conversation.ConversationResult:
         """入力を分かち書きして、デフォルトのHassilに渡す"""
 
-        _LOGGER.warning(
+        _LOGGER.debug(
             "[%s][step1] _async_handle_message called: agent_id=%s text=%s",
             DOMAIN,
             user_input.agent_id,
@@ -120,7 +120,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         # 例: "B'zのLOVE PHANTOMを流して" -> "B'z の LOVE PHANTOM を 流し て"
         segmented_text = _normalize_segmented_text(_tokenize_text(raw_text))
 
-        _LOGGER.warning(
+        _LOGGER.debug(
             "[%s][step2] tokenized text: original=%s segmented=%s",
             DOMAIN,
             raw_text,
@@ -133,7 +133,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         )
 
         try:
-            _LOGGER.warning(
+            _LOGGER.debug(
                 "[%s][step3] delegating to default agent: %s",
                 DOMAIN,
                 HOME_ASSISTANT_AGENT,
@@ -151,7 +151,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
                 extra_system_prompt=user_input.extra_system_prompt,
             )
 
-            _LOGGER.warning(
+            _LOGGER.debug(
                 "[%s][step4] default agent returned: response_type=%s error_code=%s",
                 DOMAIN,
                 result.response.response_type,
