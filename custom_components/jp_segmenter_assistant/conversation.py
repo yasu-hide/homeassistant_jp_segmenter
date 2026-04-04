@@ -34,6 +34,7 @@ async def async_setup_entry(
     async_add_entities,
 ) -> bool:
     """会話エージェントをセットアップ（UI経由で呼ばれる）"""
+    _LOGGER.warning("[%s][setup] Registering conversation entity: %s", DOMAIN, CONVERSATION_ENTITY_ID)
     async_add_entities([JpSegmenterAgent(hass, config_entry)])
     return True
 
@@ -61,10 +62,24 @@ class JpSegmenterAgent(conversation.ConversationEntity):
     ) -> conversation.ConversationResult:
         """入力を分かち書きして、デフォルトのHassilに渡す"""
 
+        _LOGGER.warning(
+            "[%s][step1] _async_handle_message called: agent_id=%s text=%s",
+            DOMAIN,
+            user_input.agent_id,
+            user_input.text,
+        )
+
         raw_text = user_input.text
         # TinySegmenterで分かち書きを実行
         # 例: "B'zのLOVE PHANTOMを流して" -> "B'z の LOVE PHANTOM を 流し て"
         segmented_text = " ".join(_tokenize_text(raw_text))
+
+        _LOGGER.warning(
+            "[%s][step2] tokenized text: original=%s segmented=%s",
+            DOMAIN,
+            raw_text,
+            segmented_text,
+        )
 
         _LOGGER.debug(
             "[%s] Original: '%s' -> Segmented: '%s'", 
@@ -72,7 +87,13 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         )
 
         try:
-            return await conversation.async_converse(
+            _LOGGER.warning(
+                "[%s][step3] delegating to default agent: %s",
+                DOMAIN,
+                HOME_ASSISTANT_AGENT,
+            )
+
+            result = await conversation.async_converse(
                 hass=self.hass,
                 text=segmented_text,
                 conversation_id=user_input.conversation_id,
@@ -83,6 +104,14 @@ class JpSegmenterAgent(conversation.ConversationEntity):
                 satellite_id=user_input.satellite_id,
                 extra_system_prompt=user_input.extra_system_prompt,
             )
+
+            _LOGGER.warning(
+                "[%s][step4] default agent returned: response_type=%s",
+                DOMAIN,
+                result.response.response_type,
+            )
+
+            return result
         except ValueError:
             _LOGGER.exception("Default conversation agent not found")
             response = intent.IntentResponse(language=user_input.language)
