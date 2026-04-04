@@ -5,6 +5,7 @@ import logging
 from tinysegmenter import TinySegmenter
 
 from homeassistant.components import conversation
+from homeassistant.components.conversation import HOME_ASSISTANT_AGENT
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import intent
@@ -52,8 +53,7 @@ class JpSegmenterAgent(conversation.AbstractConversationAgent):
         )
 
         # Home Assistant 標準の会話エージェント (Hassil) を取得
-        # ※ "homeassistant" が標準エンジンのIDです
-        default_agent = await conversation.async_get_agent(self.hass, "homeassistant")
+        default_agent = conversation.async_get_agent(self.hass, HOME_ASSISTANT_AGENT)
         
         if default_agent is None:
             _LOGGER.error("Default conversation agent not found")
