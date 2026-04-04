@@ -38,11 +38,13 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         """日本語(ja)のみを対象とする"""
         return ["ja"]
 
-    async def async_process(
-        self, user_input: conversation.ConversationInput
+    async def _async_handle_message(
+        self,
+        user_input: conversation.ConversationInput,
+        chat_log: conversation.ChatLog,
     ) -> conversation.ConversationResult:
         """入力を分かち書きして、デフォルトのHassilに渡す"""
-        
+
         raw_text = user_input.text
         # TinySegmenterで分かち書きを実行
         # 例: "B'zのLOVE PHANTOMを流して" -> "B'z の LOVE PHANTOM を 流し て"
@@ -63,7 +65,16 @@ class JpSegmenterAgent(conversation.ConversationEntity):
                 conversation_id=user_input.conversation_id,
             )
 
-        # テキストを分かち書き済みのものに差し替えて、標準エンジンに処理を委譲
-        user_input.text = segmented_text
-        
-        return await default_agent.async_process(user_input)
+        # 分かち書き済みの入力を新しく組み立てて、標準エンジンに処理を委譲
+        segmented_input = conversation.ConversationInput(
+            text=segmented_text,
+            context=user_input.context,
+            conversation_id=user_input.conversation_id,
+            device_id=user_input.device_id,
+            satellite_id=user_input.satellite_id,
+            language=user_input.language,
+            agent_id=user_input.agent_id,
+            extra_system_prompt=user_input.extra_system_prompt,
+        )
+
+        return await default_agent.async_process(segmented_input)
