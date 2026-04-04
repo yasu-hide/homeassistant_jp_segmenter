@@ -21,16 +21,17 @@ async def async_setup_entry(
     async_add_entities,
 ) -> bool:
     """会話エージェントをセットアップ（UI経由で呼ばれる）"""
-    agent = JpSegmenterAgent(hass, config_entry)
-    conversation.async_set_agent(hass, config_entry, agent)
+    async_add_entities([JpSegmenterAgent(hass, config_entry)])
     return True
 
-class JpSegmenterAgent(conversation.AbstractConversationAgent):
+class JpSegmenterAgent(conversation.ConversationEntity):
     """日本語分かち書きを行う会話エージェントラッパー"""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
+        self._attr_name = "Japanese Segmenter Assistant"
+        self._attr_unique_id = entry.entry_id
 
     @property
     def supported_languages(self) -> list[str] | str:
