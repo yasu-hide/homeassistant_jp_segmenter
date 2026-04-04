@@ -1,2 +1,2 @@
-# homeassistant_jp_segmenger
+# homeassistant_jp_segmenter
 Japanese Segmenter Assistant
