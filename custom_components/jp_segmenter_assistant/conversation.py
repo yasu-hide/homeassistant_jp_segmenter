@@ -27,6 +27,8 @@ async def async_setup_entry(
 class JpSegmenterAgent(conversation.ConversationEntity):
     """日本語分かち書きを行う会話エージェントラッパー"""
 
+    _attr_supported_features = conversation.ConversationEntityFeature.CONTROL
+
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
@@ -41,7 +43,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
     async def _async_handle_message(
         self,
         user_input: conversation.ConversationInput,
-        chat_log: conversation.ChatLog,
+        _chat_log: conversation.ChatLog,
     ) -> conversation.ConversationResult:
         """入力を分かち書きして、デフォルトのHassilに渡す"""
 
@@ -78,3 +80,11 @@ class JpSegmenterAgent(conversation.ConversationEntity):
                 response=response,
                 conversation_id=user_input.conversation_id,
             )
+
+    async def async_prepare(self, language: str | None = None) -> None:
+        """標準の会話エージェントの準備処理を委譲する"""
+        await conversation.async_prepare_agent(
+            self.hass,
+            HOME_ASSISTANT_AGENT,
+            language or self.hass.config.language,
+        )
