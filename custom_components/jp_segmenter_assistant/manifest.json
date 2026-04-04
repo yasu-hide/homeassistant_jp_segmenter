@@ -1,10 +1,12 @@
 {
   "domain": "jp_segmenter_assistant",
   "name": "Japanese Segmenter Assistant",
+  "version": "1.0.0",
   "documentation": "https://github.com/yasu-hide/homeassistant_jp_segmenter",
   "dependencies": ["conversation"],
   "codeowners": ["@yasu-hide"],
   "homeassistant": "2024.5.0",
-  "requirements": ["tinysegmenter==0.3"],
-  "version": "1.0.0"
+  "config_flow": true,
+  "iot_class": "local_polling",
+  "requirements": ["tinysegmenter==0.3"]
 }
