@@ -55,26 +55,26 @@ class JpSegmenterAgent(conversation.ConversationEntity):
             DOMAIN, raw_text, segmented_text
         )
 
-        # Home Assistant 標準の会話エージェント (Hassil) を取得
-        default_agent = conversation.async_get_agent(self.hass, HOME_ASSISTANT_AGENT)
-        
-        if default_agent is None:
-            _LOGGER.error("Default conversation agent not found")
+        try:
+            return await conversation.async_converse(
+                hass=self.hass,
+                text=segmented_text,
+                conversation_id=user_input.conversation_id,
+                context=user_input.context,
+                language=user_input.language,
+                agent_id=HOME_ASSISTANT_AGENT,
+                device_id=user_input.device_id,
+                satellite_id=user_input.satellite_id,
+                extra_system_prompt=user_input.extra_system_prompt,
+            )
+        except ValueError:
+            _LOGGER.exception("Default conversation agent not found")
+            response = intent.IntentResponse(language=user_input.language)
+            response.async_set_error(
+                intent.IntentResponseErrorCode.UNKNOWN,
+                "Default conversation agent not found",
+            )
             return conversation.ConversationResult(
-                response=intent.IntentResponse(language=user_input.language),
+                response=response,
                 conversation_id=user_input.conversation_id,
             )
-
-        # 分かち書き済みの入力を新しく組み立てて、標準エンジンに処理を委譲
-        segmented_input = conversation.ConversationInput(
-            text=segmented_text,
-            context=user_input.context,
-            conversation_id=user_input.conversation_id,
-            device_id=user_input.device_id,
-            satellite_id=user_input.satellite_id,
-            language=user_input.language,
-            agent_id=user_input.agent_id,
-            extra_system_prompt=user_input.extra_system_prompt,
-        )
-
-        return await default_agent.async_process(segmented_input)
