@@ -152,9 +152,10 @@ class JpSegmenterAgent(conversation.ConversationEntity):
             )
 
             _LOGGER.warning(
-                "[%s][step4] default agent returned: response_type=%s",
+                "[%s][step4] default agent returned: response_type=%s error_code=%s",
                 DOMAIN,
                 result.response.response_type,
+                result.response.error_code,
             )
 
             return result
