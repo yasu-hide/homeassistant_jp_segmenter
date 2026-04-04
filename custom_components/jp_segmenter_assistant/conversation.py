@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import intent
 
-from .const import CONVERSATION_ENTITY_ID, DOMAIN, AGENT_OBJECT_ID
+from .const import CONVERSATION_ENTITY_ID, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 segmenter = TinySegmenter()
@@ -46,7 +46,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         self.hass = hass
         self.entry = entry
         self._attr_name = "Japanese Segmenter Assistant"
-        self._attr_unique_id = AGENT_OBJECT_ID
+        self._attr_unique_id = DOMAIN
         self.entity_id = CONVERSATION_ENTITY_ID
 
     @property
