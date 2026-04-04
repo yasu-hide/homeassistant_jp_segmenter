@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from tinysegmenter import TinySegmenter
 
 from homeassistant.components import conversation
@@ -27,6 +28,17 @@ def _tokenize_text(text: str) -> list[str]:
         return segment(text)
 
     raise AttributeError("TinySegmenter has no tokenize or segment method")
+
+
+def _normalize_segmented_text(tokens: list[str]) -> str:
+    """Normalize tokenized text for Hassil matching stability."""
+    # Remove empty fragments and normalize whitespace.
+    segmented = " ".join(token for token in tokens if token)
+    segmented = re.sub(r"\s+", " ", segmented).strip()
+
+    # Re-join apostrophes inside latin words (e.g. B 'z -> B'z).
+    segmented = re.sub(r"([A-Za-z0-9])\s+'\s*([A-Za-z0-9])", r"\1'\2", segmented)
+    return segmented
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -72,7 +84,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         raw_text = user_input.text
         # TinySegmenterで分かち書きを実行
         # 例: "B'zのLOVE PHANTOMを流して" -> "B'z の LOVE PHANTOM を 流し て"
-        segmented_text = " ".join(_tokenize_text(raw_text))
+        segmented_text = _normalize_segmented_text(_tokenize_text(raw_text))
 
         _LOGGER.warning(
             "[%s][step2] tokenized text: original=%s segmented=%s",
