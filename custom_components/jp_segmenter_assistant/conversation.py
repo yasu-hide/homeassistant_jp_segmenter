@@ -16,6 +16,9 @@ from .const import CONVERSATION_ENTITY_ID, DOMAIN
 _LOGGER = logging.getLogger(__name__)
 segmenter = TinySegmenter()
 
+_RE_HIRAGANA_ONLY = re.compile(r"^[\u3041-\u309F]+$")
+_RE_KANJI_OR_KATAKANA_TAIL = re.compile(r".*[\u3400-\u9FFF\u30A0-\u30FF]$")
+
 
 def _tokenize_text(text: str) -> list[str]:
     """Return segmented Japanese tokens across TinySegmenter variants."""
@@ -32,8 +35,31 @@ def _tokenize_text(text: str) -> list[str]:
 
 def _normalize_segmented_text(tokens: list[str]) -> str:
     """Normalize tokenized text for Hassil matching stability."""
-    # Remove empty fragments and normalize whitespace.
-    segmented = " ".join(token for token in tokens if token)
+    normalized_tokens = [token.strip() for token in tokens if token and token.strip()]
+
+    # Merge contiguous hiragana chunks (e.g. "み", "ゆき" -> "みゆき").
+    merged_hiragana: list[str] = []
+    for token in normalized_tokens:
+        if merged_hiragana and _RE_HIRAGANA_ONLY.fullmatch(merged_hiragana[-1]) and _RE_HIRAGANA_ONLY.fullmatch(token):
+            merged_hiragana[-1] += token
+            continue
+        merged_hiragana.append(token)
+
+    # Merge name-like kanji/katakana + hiragana chunks (e.g. "中島", "みゆき" -> "中島みゆき").
+    merged_tokens: list[str] = []
+    for token in merged_hiragana:
+        if (
+            merged_tokens
+            and _RE_KANJI_OR_KATAKANA_TAIL.fullmatch(merged_tokens[-1])
+            and _RE_HIRAGANA_ONLY.fullmatch(token)
+            and len(token) >= 2
+        ):
+            merged_tokens[-1] += token
+            continue
+        merged_tokens.append(token)
+
+    # Normalize whitespace.
+    segmented = " ".join(merged_tokens)
     segmented = re.sub(r"\s+", " ", segmented).strip()
 
     # Re-join apostrophes inside latin words (e.g. B 'z -> B'z).
