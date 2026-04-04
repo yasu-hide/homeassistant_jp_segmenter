@@ -15,6 +15,19 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 segmenter = TinySegmenter()
 
+
+def _tokenize_text(text: str) -> list[str]:
+    """Return segmented Japanese tokens across TinySegmenter variants."""
+    tokenize = getattr(segmenter, "tokenize", None)
+    if callable(tokenize):
+        return tokenize(text)
+
+    segment = getattr(segmenter, "segment", None)
+    if callable(segment):
+        return segment(text)
+
+    raise AttributeError("TinySegmenter has no tokenize or segment method")
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -50,7 +63,7 @@ class JpSegmenterAgent(conversation.ConversationEntity):
         raw_text = user_input.text
         # TinySegmenterで分かち書きを実行
         # 例: "B'zのLOVE PHANTOMを流して" -> "B'z の LOVE PHANTOM を 流し て"
-        segmented_text = " ".join(segmenter.segment(raw_text))
+        segmented_text = " ".join(_tokenize_text(raw_text))
 
         _LOGGER.debug(
             "[%s] Original: '%s' -> Segmented: '%s'", 
