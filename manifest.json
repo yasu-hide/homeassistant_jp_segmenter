@@ -1,0 +1,9 @@
+{
+  "domain": "jp_segmenter_assistant",
+  "name": "Japanese Segmenter Assistant",
+  "documentation": "https://github.com/yasu-hide/homeassistant_jp_segmenter",
+  "dependencies": ["conversation"],
+  "codeowners": ["@your_name"],
+  "requirements": ["tinysegmenter==0.3"],
+  "version": "1.0.0"
+}
