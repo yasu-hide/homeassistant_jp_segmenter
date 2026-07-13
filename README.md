@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/yasu-hide/homeassistant_jp_segmenter/graph/badge.svg?token=J0AAUDI7LJ)](https://codecov.io/github/yasu-hide/homeassistant_jp_segmenter)
+
 # Japanese Segmenter Assistant for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)

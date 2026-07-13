@@ -1,0 +1,11 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["custom_components/jp_segmenter_assistant"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
