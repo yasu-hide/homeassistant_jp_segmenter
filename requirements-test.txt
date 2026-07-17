@@ -5,9 +5,5 @@ tinysegmenter==0.3
 # homeassistant.components.conversation がランタイムに要求するが pip の静的解決では
 # 自動的に入らないため個別にピン。pytest-homeassistant-custom-component / homeassistant を
 # バンプする際はこの2つも合わせて見直すこと。
-hassil==3.5.0
-home-assistant-intents==2025.12.2
-# homeassistant -> aiodns 3.5.0 は pycares 5.x の破壊的変更(ares_query_a_result 削除)と
-# 非互換。aiodns側が上限を指定していないため、pip解決で5.xが入り import 時に落ちる。
-# 解消されるまで4系に固定する。
-pycares<5
+hassil==3.8.0
+home-assistant-intents==2026.6.24
