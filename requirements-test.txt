@@ -5,5 +5,5 @@ tinysegmenter==0.4
 # homeassistant.components.conversation がランタイムに要求するが pip の静的解決では
 # 自動的に入らないため個別にピン。pytest-homeassistant-custom-component / homeassistant を
 # バンプする際はこの2つも合わせて見直すこと。
-hassil==3.8.0
+hassil==3.8.1
 home-assistant-intents==2026.6.24
