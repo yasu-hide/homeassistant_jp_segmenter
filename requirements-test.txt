@@ -1,5 +1,5 @@
 # homeassistant, pytest, pytest-asyncio, pytest-cov, coverage を一括でピン
-pytest-homeassistant-custom-component==0.13.345
+pytest-homeassistant-custom-component==0.13.346
 # custom_components/jp_segmenter_assistant/manifest.json 自身の requirements と一致させる
 tinysegmenter==0.4
 # homeassistant.components.conversation がランタイムに要求するが pip の静的解決では
