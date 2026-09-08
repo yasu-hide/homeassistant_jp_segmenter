@@ -6,4 +6,4 @@ tinysegmenter==0.4
 # 自動的に入らないため個別にピン。pytest-homeassistant-custom-component / homeassistant を
 # バンプする際はこの2つも合わせて見直すこと。
 hassil==3.11.0
-home-assistant-intents==2026.8.24
+home-assistant-intents==2026.8.28
