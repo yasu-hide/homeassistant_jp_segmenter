@@ -7,4 +7,4 @@ tinysegmenter==0.4
 # バンプする際はこの3つも合わせて見直すこと。
 gazetteer-matcher==1.2.0
 hassil==3.12.1
-home-assistant-intents>=2026.8.28
+home-assistant-intents>=2026.9.17
