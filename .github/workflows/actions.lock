@@ -3,6 +3,9 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
+    '.github/workflows/gitleaks.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'gitleaks/gitleaks-action@v3.0.0'
     '.github/workflows/test.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
@@ -30,3 +33,8 @@ dependencies:
         repo_id: 200299178
         uses:
             - 'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd'
+    'gitleaks/gitleaks-action@v3.0.0':
+        ref: 'v3.0.0'
+        commit: 'sha1-e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e'
+        owner_id: 90395851
+        repo_id: 242854909
